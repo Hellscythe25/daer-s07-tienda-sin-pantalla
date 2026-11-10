@@ -1,0 +1,11 @@
+line-length = 120
+target-version = "py312"
+# Archivos prohibidos o de la plantilla: no se lintean ni se reformatean.
+extend-exclude = ["myvenv", "tienda/tests", "tienda/ia", "tienda/models.py", "tienda/servidor_mcp.py",
+                  "tienda/management", "extra07", "manage.py", "tienda/admin.py", "tienda/apps.py", "tienda/migrations", "tienda/formato.py", "tienda/version.py"]
+
+[lint]
+select = ["E", "F", "W", "I"]
+
+[format]
+quote-style = "single"
