@@ -11,9 +11,11 @@ Comprueben su avance con: python manage.py duelo
 Los datos son fijos (`python manage.py cargar_datos`), así que cada pregunta tiene una respuesta conocida.
 """
 
-from django.db.models import Count, DecimalField, ExpressionWrapper, F, Q, Sum  # noqa: F401  (los van a necesitar)
+from decimal import Decimal
 
-from tienda.models import Cliente, LineaPedido, Pedido, Producto  # noqa: F401
+from django.db.models import Count, DecimalField, ExpressionWrapper, F, Q, Sum
+
+from tienda.models import Cliente, LineaPedido, Pedido, Producto
 
 
 def productos_por_categoria(nombre):
@@ -22,21 +24,29 @@ def productos_por_categoria(nombre):
     El nombre de la categoría NO distingue mayúsculas: «gaseosas» y «Gaseosas» dan lo mismo.
     Devuelve [{'nombre', 'precio', 'stock', 'descripcion'}, ...]; lista vacía si la categoría no existe.
     """
-    raise NotImplementedError('TODO(alumno) Parte 1: productos_por_categoria en tienda/alumno/consultas.py')
+    return list(
+        Producto.objects.filter(categoria__nombre__iexact=nombre)
+        .order_by('nombre')
+        .values('nombre', 'precio', 'stock', 'descripcion')
+    )
 
 
 def buscar_productos(texto):
     """Nombres de los productos cuyo nombre O descripción contienen `texto` (sin distinguir mayúsculas),
     ordenados. Pista: una condición O entre dos campos se escribe con objetos Q.
     """
-    raise NotImplementedError('TODO(alumno) Parte 1: buscar_productos')
+    return list(
+        Producto.objects.filter(Q(nombre__icontains=texto) | Q(descripcion__icontains=texto))
+        .order_by('nombre')
+        .values_list('nombre', flat=True)
+    )
 
 
 def stock_bajo(umbral=5):
     """Productos con stock menor o igual a `umbral`, del que menos tiene al que más (y por nombre si empatan).
     Devuelve [{'nombre', 'stock'}, ...].
     """
-    raise NotImplementedError('TODO(alumno) Parte 1: stock_bajo')
+    return list(Producto.objects.filter(stock__lte=umbral).order_by('stock', 'nombre').values('nombre', 'stock'))
 
 
 def ventas_por_categoria():
@@ -46,7 +56,15 @@ def ventas_por_categoria():
     Devuelve [{'categoria', 'total'}, ...] con `total` en Decimal.
     Pista: values() para agrupar, annotate(Sum(...)) para sumar y F() para multiplicar dos campos.
     """
-    raise NotImplementedError('TODO(alumno) Parte 1: ventas_por_categoria')
+    importe = ExpressionWrapper(
+        F('cantidad') * F('precio_unitario'), output_field=DecimalField(max_digits=12, decimal_places=2)
+    )
+    return list(
+        LineaPedido.objects.filter(pedido__estado=Pedido.PAGADO)
+        .values(categoria=F('producto__categoria__nombre'))
+        .annotate(total=Sum(importe))
+        .order_by('-total', 'categoria')
+    )
 
 
 def clientes_frecuentes(minimo=2):
@@ -54,7 +72,12 @@ def clientes_frecuentes(minimo=2):
     pedidos y por nombre si empatan. Devuelve [{'nombre', 'pedidos_pagados'}, ...].
     Pista: Count admite un filter=Q(...).
     """
-    raise NotImplementedError('TODO(alumno) Parte 1: clientes_frecuentes')
+    return list(
+        Cliente.objects.annotate(pedidos_pagados=Count('pedidos', filter=Q(pedidos__estado=Pedido.PAGADO)))
+        .filter(pedidos_pagados__gte=minimo)
+        .order_by('-pedidos_pagados', 'nombre')
+        .values('nombre', 'pedidos_pagados')
+    )
 
 
 def detalle_pedido(pedido_id):
@@ -65,4 +88,22 @@ def detalle_pedido(pedido_id):
     Tiene que resolverse en DOS consultas a la base de datos, tenga las líneas que tenga: una para el pedido
     con su cliente y otra para las líneas con su producto (select_related).
     """
-    raise NotImplementedError('TODO(alumno) Parte 1: detalle_pedido')
+    pedido = Pedido.objects.select_related('cliente').filter(pk=pedido_id).first()  # consulta 1
+    if pedido is None:
+        return None
+    lineas = [
+        {
+            'producto': li.producto.nombre,
+            'cantidad': li.cantidad,
+            'precio_unitario': li.precio_unitario,
+            'subtotal': li.cantidad * li.precio_unitario,
+        }
+        for li in pedido.lineas.select_related('producto')  # consulta 2
+    ]
+    return {
+        'pedido': pedido.pk,
+        'cliente': pedido.cliente.nombre,
+        'estado': pedido.estado,
+        'lineas': lineas,
+        'total': sum((li['subtotal'] for li in lineas), Decimal('0')),
+    }
