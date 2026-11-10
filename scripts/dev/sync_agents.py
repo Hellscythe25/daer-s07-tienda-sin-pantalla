@@ -171,7 +171,8 @@ def main(argv: list[str] | None = None) -> int:
         for rol in roles:
             destino = RAIZ / carpeta / f'{rol.name}{ext}'
             contenido = generar(rol)
-            actual = destino.read_bytes().decode('utf-8') if destino.exists() else None
+            # Tolera CRLF: con core.autocrlf Git puede cambiar los finales de línea al clonar.
+            actual = destino.read_bytes().decode('utf-8').replace('\r\n', '\n') if destino.exists() else None
             if actual == contenido:
                 continue
             desfasados += 1
