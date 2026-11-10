@@ -6,20 +6,29 @@ permission:
   bash:
     "*": deny
     "python manage.py test*": allow
-    "python manage.py duelo*": allow
+    "python manage.py duelo": allow
+    "python manage.py duelo --detalle": allow
+    "python manage.py duelo ia": allow
     "python manage.py tiendactl*": allow
     "myvenv/Scripts/python.exe manage.py test*": allow
-    "myvenv/Scripts/python.exe manage.py duelo*": allow
+    "myvenv/Scripts/python.exe manage.py duelo": allow
+    "myvenv/Scripts/python.exe manage.py duelo --detalle": allow
+    "myvenv/Scripts/python.exe manage.py duelo ia": allow
     "myvenv/Scripts/python.exe manage.py tiendactl*": allow
     "myvenv\\Scripts\\python.exe manage.py test*": allow
-    "myvenv\\Scripts\\python.exe manage.py duelo*": allow
+    "myvenv\\Scripts\\python.exe manage.py duelo": allow
+    "myvenv\\Scripts\\python.exe manage.py duelo --detalle": allow
+    "myvenv\\Scripts\\python.exe manage.py duelo ia": allow
     "myvenv\\Scripts\\python.exe manage.py tiendactl*": allow
     "git status*": allow
     "git diff*": allow
     "git log*": allow
-    "git branch*": allow
-    "ls*": allow
-    "dir*": allow
+    "git branch --list*": allow
+    "git branch --show-current": allow
+    "ls": allow
+    "ls *": allow
+    "dir": allow
+    "dir *": allow
     "cat *": allow
 ---
 <!-- GENERADO por scripts/dev/sync_agents.py desde agents-src/code-reviewer.md — no editar a mano. -->

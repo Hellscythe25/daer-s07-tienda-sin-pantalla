@@ -14,6 +14,7 @@ jobs:
       - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: python manage.py migrate
       - run: ruff check .
+      - run: ruff format --check .
       - run: python scripts/dev/sync_agents.py --check
       # Las partes aún sin entregar pueden fallar en develop; informativo hasta el final.
       - run: python manage.py test
