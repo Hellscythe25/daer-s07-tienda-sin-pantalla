@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "tienda": {
-      "command": "myvenv/Scripts/python.exe",
-      "args": ["manage.py", "servidor_mcp"]
-    }
-  }
-}
