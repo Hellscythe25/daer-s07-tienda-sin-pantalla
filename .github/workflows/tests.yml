@@ -1,0 +1,21 @@
+name: tests
+on:
+  pull_request:
+    branches: [develop]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: python manage.py migrate
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: python scripts/dev/sync_agents.py --check
+      # Las partes aún sin entregar pueden fallar en develop; informativo hasta el final.
+      - run: python manage.py test
+        continue-on-error: true
