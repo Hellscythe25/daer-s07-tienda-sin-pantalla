@@ -1,0 +1,6 @@
+# Configuración de proyecto de Codex (solo se carga si el proyecto es de confianza).
+# Ruta relativa a la raíz del repo; en macOS/Linux usar myvenv/bin/python.
+[mcp_servers.tienda]
+command = "myvenv/Scripts/python.exe"
+args = ["manage.py", "servidor_mcp"]
+startup_timeout_sec = 20
