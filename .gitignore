@@ -3,8 +3,3 @@ __pycache__/
 *.pyc
 myenv/
 venv/
-myvenv/
-.env
-.env.*
-.ruff_cache/
-.claude/settings.local.json
