@@ -6,12 +6,12 @@ del repo; en macOS/Linux sería `myvenv/bin/python`). Seis herramientas `tienda_
 
 | Herramienta | Archivo | Clave | Verificación realizada |
 |---|---|---|---|
-| Claude Code | `.mcp.json` | `mcpServers.tienda` (`command`, `args`) | JSON válido; aprobar el servidor al abrir el proyecto y comprobar con `/mcp` o `claude mcp list` |
+| Claude Code | `.mcp.json` | `mcpServers.tienda` (`command`, `args`) | Hecho: JSON válido. Pendiente (por la pareja): aprobar el servidor al abrir el proyecto y comprobar con `/mcp` o `claude mcp list` |
 | opencode | `opencode.json` | `mcp.tienda` (`type: local`, `command` como lista, `enabled`) | `opencode mcp list` → `tienda connected` (opencode 1.18.26) |
 | Codex | `.codex/config.toml` | `[mcp_servers.tienda]` (`command`, `args`) | TOML válido (`tomllib`); Codex solo lo carga en proyectos de confianza. No probado: Codex no está instalado en la máquina de desarrollo |
 
 Nota: la documentación más reciente de opencode describe `mcp.servers.<nombre>` y `disabled`; la versión instalada
-acepta el formato del README (`mcp.<nombre>` y `enabled`), que es el usado aquí.
+acepta el formato del README (`mcp.<nombre>` y `enabled`), que es el usado aquí (comprobado con `opencode mcp list`). Si una versión nueva no lo carga, pasar a `mcp.servers.tienda` sin `enabled`.
 
 Prueba automática: `python manage.py test tienda.tests.test_p3_mcp` → 5 de 5 en verde (incluye
 `test_configuracion_del_cliente_mcp`, que exige que alguna configuración lance `servidor_mcp`).
