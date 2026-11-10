@@ -123,3 +123,29 @@ lo que puede hacer un modelo; no salen de un modelo concreto.
 
 El repositorio de la pareja (sin `myvenv/` ni `db.sqlite3`), con commits de los dos, y el informe con las tablas y
 capturas, **una sola vez por pareja**, como segunda entrega de laboratorio de la semana 7.
+
+---
+
+## Cómo ejecutar
+Ver «Empezar» arriba. Resumen: `python -m venv myvenv`, `myvenv\Scripts\activate`,
+`pip install -r requirements.txt -r requirements-dev.txt`, `python manage.py migrate`, `python manage.py cargar_datos`.
+
+## Cómo probar
+```powershell
+python manage.py test                # las 19 pruebas
+python manage.py duelo --detalle     # por parte, contra tienda/alumno/
+ruff check . ; ruff format --check .
+```
+
+## Estructura de ramas
+`main` (entrega) ← `develop` ← una rama por tarea: `chore/config-agentes`, `feature/parte1-consultas-orm`,
+`feature/parte2-script-reporte`, `feature/parte3-mcp-config`, `feature/parte4-duelo-correccion`, `docs/informe`.
+Detalles y convención de commits en [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Trabajar con Claude Code / opencode / Codex
+Las tres herramientas comparten las mismas reglas y roles:
+- `AGENTS.md` es la fuente única (opencode y Codex lo leen directamente; `CLAUDE.md` solo importa `@AGENTS.md`).
+- Los subagentes se definen una vez en `agents-src/<rol>.md` y `python scripts/dev/sync_agents.py` genera
+  `.claude/agents/`, `.opencode/agents/` y `.codex/agents/`. No edites los generados; `--check` verifica que estén al día.
+- Alcance: `read-only` y `scoped-write` se hacen cumplir con permisos de ruta en opencode; en Claude Code y Codex
+  la restricción de rutas va en las instrucciones del rol (esas herramientas no la permiten por subagente).
